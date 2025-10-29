@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Page configuration
-st.set_page_config(page_title="ManagerIQ Dashboard", layout="wide", page_icon="🏈")
+st.set_page_config(page_title="CBA Fantasy Football Dashboard", layout="wide", page_icon="🏈")
 
 # Load data from CSV files
 @st.cache_data
@@ -25,13 +25,13 @@ def load_data():
 teams, standings, matchups, lineups = load_data()
 
 # Title
-st.title("🏈 ManagerIQ: Fantasy League Dashboard")
+st.title("🏈 CBA Fantasy Football Dashboard")
 st.markdown("---")
 
 # Sidebar
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", [
-    "Manager Report Card",
+    "Owner Report Card",
     "Head-to-Head Analysis",
     "Luck Analyzer",
     "Strength of Schedule",
@@ -43,8 +43,8 @@ page = st.sidebar.radio("Go to", [
 # PAGE 1: MANAGER REPORT CARD
 # ===========================
 if page == "Manager Report Card":
-    st.header("📊 Manager Report Card")
-    st.markdown("Analyze how well each manager sets their lineup each week")
+    st.header("📊 Owner Report Card")
+    st.markdown("Analyze how well each owner sets their lineup each week")
     
     # Lineups table already has season, week, and team_id - no merge needed!
     lineup_analysis = lineups.copy()
