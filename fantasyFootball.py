@@ -1,51 +1,28 @@
 import streamlit as st
 import pandas as pd
-import pyodbc
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import numpy as np
 
 # Page configuration
 st.set_page_config(page_title="ManagerIQ Dashboard", layout="wide", page_icon="🏈")
 
-# Database connection
-@st.cache_resource
-def get_connection():
-    """Create database connection - UPDATE WITH YOUR CONNECTION STRING"""
-    conn_str = (
-        "DRIVER={ODBC Driver 17 for SQL Server};"  # or {SQL Server} for older driver
-        "SERVER=DESKTOP-J9IV3OH;"  # e.g., localhost, 192.168.1.100, or SERVER\INSTANCE
-        "DATABASE=espn;"
-        "Trusted_Connection=yes;"
-    )
-    return pyodbc.connect(conn_str)
-
+# Load data from CSV files
 @st.cache_data
 def load_data():
-    """Load all tables from database"""
-    conn = get_connection()
-    
-    # Load tables - use proper column names from your schema
-    teams = pd.read_sql("SELECT * FROM [espn].[dbo].[Teams]", conn)
-    standings = pd.read_sql("SELECT * FROM [espn].[dbo].[Standings]", conn)
-    matchups = pd.read_sql("SELECT * FROM [espn].[dbo].[Matchups]", conn)
-    lineups = pd.read_sql("SELECT * FROM [espn].[dbo].[Lineups]", conn)
-    
-    # Debug: Print column names to verify
-    print("Teams columns:", teams.columns.tolist())
-    print("Matchups columns:", matchups.columns.tolist())
-    print("Lineups columns:", lineups.columns.tolist())
-    
-    return teams, standings, matchups, lineups
+    """Load all tables from CSV files"""
+    try:
+        teams = pd.read_csv("data/teams.csv")
+        standings = pd.read_csv("data/standings.csv")
+        matchups = pd.read_csv("data/matchups.csv")
+        lineups = pd.read_csv("data/lineups.csv")
+        return teams, standings, matchups, lineups
+    except FileNotFoundError as e:
+        st.error(f"❌ Could not find data files. Make sure you have exported your data to CSV files in a 'data/' folder.")
+        st.stop()
 
 # Load data
-try:
-    teams, standings, matchups, lineups = load_data()
-except Exception as e:
-    st.error(f"⚠️ Database connection error: {e}")
-    st.info("💡 Update the connection string in `get_connection()` with your SQL Server details")
-    st.stop()
+teams, standings, matchups, lineups = load_data()
 
 # Title
 st.title("🏈 ManagerIQ: Fantasy League Dashboard")
@@ -484,7 +461,7 @@ elif page == "Projection Accuracy":
     # Scatter plot - Projected vs Actual
     st.subheader("Projected vs. Actual Points")
     sample_size = st.slider("Sample size", 100, 5000, 1000)
-    sample = proj_data[proj_data['is_starter'] == True].sample(min(sample_size, len(proj_data)))
+    sample = proj_data[proj_data['is_starter'] == 1].sample(min(sample_size, len(proj_data)))
     
     fig2 = px.scatter(sample, x='projected_points', y='points_scored',
                       color='position', hover_data=['player_name', 'week'],
