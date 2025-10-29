@@ -42,7 +42,7 @@ page = st.sidebar.radio("Go to", [
 # ===========================
 # PAGE 1: MANAGER REPORT CARD
 # ===========================
-if page == "Manager Report Card":
+if page == "Owner Report Card":
     st.header("📊 Owner Report Card")
     st.markdown("Analyze how well each owner sets their lineup each week")
     
